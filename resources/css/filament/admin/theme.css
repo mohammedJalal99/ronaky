@@ -1,0 +1,17 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+@font-face {
+    font-family: 'rabar';
+
+    src: url('rabar.ttf') format('truetype');
+}
+
+* {
+    font-family: "rabar", sans-serif;
+}
+
+
+
+
+

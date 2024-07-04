@@ -1,0 +1,16 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ resource }};
+use Filament\Actions;
+use {{ baseResourcePage }};
+
+class {{ resourcePageClass }} extends {{ baseResourcePageClass }}
+{
+    protected static string $resource = {{ resourceClass }}::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
+}
