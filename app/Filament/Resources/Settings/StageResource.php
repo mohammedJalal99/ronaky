@@ -45,7 +45,7 @@ class StageResource extends Resource
                     ->label('ناو')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('student_count')
-                    ->label('ژمارەی پەپولەکان')
+                    ->label('ژمارەی پەپوولەکان')
                     ->summarize(Tables\Columns\Summarizers\Summarizer::make('sum')
                     ->using(function ($query){
                         return $query->get()->sum('student_count');

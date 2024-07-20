@@ -22,9 +22,9 @@ class DriverResource extends Resource
 
     protected static ?string $navigationIcon = 'mdi-bus-clock';
 
-    protected static ?string $label = "شۆفێر";
-    protected static ?string $pluralLabel = "شۆفێرەکان";
-    protected static ?string $navigationGroup = 'پەپولەکان';
+    protected static ?string $label = "شوفێر";
+    protected static ?string $pluralLabel = "شوفێرەکان";
+    protected static ?string $navigationGroup = 'پەپوولەکان';
 
     public static function form(Form $form): Form
     {
@@ -37,11 +37,6 @@ class DriverResource extends Resource
                 Forms\Components\TextInput::make('phone')
                     ->label('ژمارەی مۆبایل')
                     ->tel()
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('email')
-                    ->label('پۆستەی ئەلیکترۆنی')
-                    ->email()
                     ->maxLength(255)
                     ->default(null),
                 Forms\Components\TextInput::make('address')
@@ -65,9 +60,6 @@ class DriverResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->label('ژمارەی مۆبایل')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->label('پۆستەی ئەلیکترۆنی')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('address')
                     ->label('ناونیشان')
                     ->searchable(),
@@ -75,7 +67,7 @@ class DriverResource extends Resource
                     ->label('ژمارەی ئۆتۆمبێل')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('student_count')
-                    ->label('ژمارەی پەپولەکان')
+                    ->label('ژمارەی پەپوولەکان')
                     ->summarize(Tables\Columns\Summarizers\Summarizer::make('sum')
                         ->using(function ($query){
                             return $query->get()->sum('student_count');

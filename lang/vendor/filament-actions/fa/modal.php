@@ -11,7 +11,7 @@ return [
         ],
 
         'confirm' => [
-            'label' => 'تایید',
+            'label' => 'تای ید',
         ],
 
         'submit' => [

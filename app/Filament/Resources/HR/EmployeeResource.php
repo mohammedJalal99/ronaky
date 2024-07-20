@@ -22,9 +22,9 @@ class EmployeeResource extends Resource
     protected static ?string $model = Employee::class;
 
     protected static ?string $navigationIcon = 'clarity-employee-group-solid';
-    protected static ?string $label = "کارمەند";
-    protected static ?string $pluralLabel = "کارمەندەکان";
-    protected static ?string $navigationGroup = 'سەرچاوە مرۆییەکان';
+    protected static ?string $label = "ستاف";
+    protected static ?string $pluralLabel = "ستاف";
+    protected static ?string $navigationGroup = 'سەرچاوە مرۆی یەکان';
     public static function form(Form $form): Form
     {
         return $form
@@ -36,11 +36,6 @@ class EmployeeResource extends Resource
                             ->label('ناو')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
-                            ->label('پۆستەی ئەلیکترۆنی')
-                            ->email()
-                            ->maxLength(255)
-                            ->default(null),
                         Forms\Components\TextInput::make('phone')
                             ->label('ژمارەی مۆبایل')
                             ->tel()
@@ -59,6 +54,10 @@ class EmployeeResource extends Resource
                         ->label('لەدایکبوون'),
                         Forms\Components\TextInput::make('certification')
                             ->label("بڕوانامە")
+                            ->datalist([
+                                'بەکالۆریۆس',
+                                'دبلۆم'
+                            ])
                             ->maxLength(255)
                             ->default(null),
                     ])->columns(1),
@@ -85,6 +84,10 @@ class EmployeeResource extends Resource
                             ->suffix(fn(Forms\Get $get)=>Currency::find($get('currency_id'))?->symbol),
                         Forms\Components\TextInput::make('position')
                             ->label('پیشە')
+                            ->datalist([
+                                'مامۆستا',
+                                'چاودێر'
+                            ])
                             ->maxLength(255)
                             ->columnSpanFull()
                             ->default(null),
@@ -110,9 +113,6 @@ class EmployeeResource extends Resource
                 Tables\Columns\ImageColumn::make('image')->circular(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('ناو')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->label('ئیمەیل')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('مۆبایل')

@@ -58,8 +58,8 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
             ])
-            ->topNavigation()
-            ->brandName('باخچەی ساوایانی ڕووناکی')
+//            ->topNavigation()
+            ->brandName('باخچەی منداڵانی ڕۆناکی ناحکومی')
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

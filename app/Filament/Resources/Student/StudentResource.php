@@ -12,10 +12,13 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Session;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use Wallo\FilamentSelectify\Components\ToggleButton;
 
@@ -28,16 +31,16 @@ class StudentResource extends Resource
 
 
     protected static ?string $navigationIcon = 'fas-graduation-cap';
-    protected static ?string $pluralLabel = "پەپولەکان";
-    protected static ?string $label = "پەپولە";
-    protected static ?string $navigationGroup = 'پەپولەکان';
+    protected static ?string $pluralLabel = "پەپوولەکان";
+    protected static ?string $label = "پەپوولە";
+    protected static ?string $navigationGroup = 'پەپوولەکان';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Section::make('student_details')
-                    ->heading('زانییاری کەسی')
+                    ->heading('زانیاری کەسی')
                     ->columnSpan(1)
                     ->columns(2)
                     ->schema([
@@ -64,14 +67,19 @@ class StudentResource extends Resource
                             ->required(),
                         Forms\Components\TextInput::make('address')
                             ->label('ناونیشان')
-                            ->maxLength(255)
                             ->default(null),
-                        static::selectField('father_id',FatherResource::class)
-                            ->label('باوک')
-                            ->relationship('father', 'name'),
-                        static::selectField('mother_id',FatherResource::class)
-                            ->label('دایک')
-                            ->relationship('mother', 'name'),
+                        static::selectField('parents_id',ParentsResource::class)
+                            ->label('دایک و باوک')
+                            ->relationship('parents', 'father_name')
+                        ->searchable(['father_name','father_phone','mother_name','mother_phone'])
+                            ->allowHtml()
+                            ->columnSpanFull()
+                            ->getOptionLabelFromRecordUsing(fn (Model $record) => "<div class='p-2  m-2 rounded'>ناوی باوک: {$record->father_name} <br> ناوی دایک: {$record->mother_name}
+                            <br>
+                           ژمارەی مۆبایلی باوک:  {$record->father_phone}
+                            <br>
+                            ژمارەی مۆبایلی دایک: {$record->mother_phone}
+                           </div> "),
                     ]),
                 Forms\Components\Section::make('تایبەت بە باخچە')
                     ->schema([
@@ -95,7 +103,7 @@ class StudentResource extends Resource
                             ->label('بەرواری دەرچوون'),
                         static::selectField('driver_id',DriverResource::class)
                             ->relationship('driver', 'name')
-                            ->label('شۆفێر')
+                            ->label('شوفێر')
                             ->default(null),
                        Forms\Components\Group::make([
                            ToggleButton::make('book')
@@ -129,7 +137,7 @@ class StudentResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('amount')
                             ->suffix('$')
-                            ->label('بڕی دراو')
+                            ->label('بڕی پارە')
                             ->live(onBlur: true)
                             ->afterStateUpdated(function (Forms\Get $get,Forms\Set $set,$state){
                                 if($get('installments') != null && $get('installments') != 0){
@@ -219,29 +227,14 @@ class StudentResource extends Resource
                ]),
                 Tables\Columns\Layout\Split::make([
                     Tables\Columns\Layout\Stack::make([
-                        Tables\Columns\TextColumn::make('father.name')
-                            ->label('باوک')
-                            ->weight(FontWeight::ExtraBold)
-                            ->size(Tables\Columns\TextColumn\TextColumnSize::Medium)
-                            ->formatStateUsing(fn($state)=>"<b>ناوی باوک: </b> ". $state)
-                            ->searchable()
-                            ->html()
-                            ->sortable(),
-                        Tables\Columns\TextColumn::make('mother.name')
-                            ->label('دایک')
-                            ->searchable()
-                            ->weight(FontWeight::ExtraBold)
-                            ->size(Tables\Columns\TextColumn\TextColumnSize::Medium)
-                            ->formatStateUsing(fn($state)=>"<b>ناوی دایک: </b> ". $state)
-                            ->html()
-                            ->sortable(),
+
                         Tables\Columns\TextColumn::make('driver.name')
-                            ->label('شۆفێر')
+                            ->label('شوفێر')
                             ->searchable()
                             ->color(Color::Blue)
                             ->weight(FontWeight::ExtraBold)
                             ->size(Tables\Columns\TextColumn\TextColumnSize::Medium)
-                            ->formatStateUsing(fn($state)=>"<b>ناوی شۆفێر: </b> ". $state)
+                            ->formatStateUsing(fn($state)=>"<b>ناوی شوفێر: </b> ". $state)
                             ->html()
                             ->sortable(),
                         Tables\Columns\TextColumn::make('birthdate')
@@ -315,7 +308,6 @@ class StudentResource extends Resource
                             ->size(Tables\Columns\TextColumn\TextColumnSize::Large)
                             ->html()
                             ->color(fn($state)=>$state?Color::Green:Color::Red),
-
                         Tables\Columns\TextColumn::make('installments')
                             ->numeric(0)
                             ->label('قستەکان')
@@ -326,10 +318,10 @@ class StudentResource extends Resource
                         Tables\Columns\TextColumn::make('per_month_amount')
                             ->numeric()
                             ->label('بڕی قست')
-                            ->suffix(fn($record)=>$record->currency->symbol)
+                            ->suffix(fn($record)=>Currency::find(1)->symbol)
                             ->color(Color::Fuchsia)
                             ->size(Tables\Columns\TextColumn\TextColumnSize::Large)
-                            ->formatStateUsing(fn($state,$record)=>'بڕی قست : '.number_format($state,$record->currency->decimal_places))
+                            ->formatStateUsing(fn($state,$record)=>'بڕی قست : '.number_format($state,Currency::find(1)->decimal_places))
                             ->html()
                             ->sortable(),
                         Tables\Columns\TextColumn::make('deleted_at')
@@ -372,14 +364,9 @@ class StudentResource extends Resource
                 DateRangeFilter::make('birthdate')
                     ->label('بەرواری لەدایکبوون'),
                 Tables\Filters\TrashedFilter::make()->native(0),
-                Tables\Filters\SelectFilter::make('father_id')
-                    ->label('باوک')
-                    ->relationship('father', 'name')
-                    ->searchable()
-                    ->preload(),
-                Tables\Filters\SelectFilter::make('mother_id')
-                    ->relationship('mother', 'name')
-                    ->label('دایک')
+                Tables\Filters\SelectFilter::make('parents_id')
+                    ->label('دایک و باوک')
+                    ->relationship('parents', 'father_name')
                     ->searchable()
                     ->preload(),
                 Tables\Filters\SelectFilter::make('gender')
@@ -391,7 +378,7 @@ class StudentResource extends Resource
                 ->label('ڕەگەز'),
                 Tables\Filters\SelectFilter::make('driver_id')
                     ->relationship('driver', 'name')
-                    ->label('شۆفێر')
+                    ->label('شوفێر')
                     ->searchable()
                      ->preload(),
                 Tables\Filters\SelectFilter::make('stage_id')
@@ -408,91 +395,77 @@ class StudentResource extends Resource
                     Tables\Actions\ForceDeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\Action::make('father_detail')
-                        ->label('زانییارییەکانی باوک')
-                        ->icon(FatherResource::getNavigationIcon())
+                        ->label('زانیاری یەکانی دایک و باوک')
+                        ->icon(ParentsResource::getNavigationIcon())
                         ->form(function ($record){
                            return [
-                               Forms\Components\TextInput::make('name')
-                                   ->default($record->father->name)
-                                   ->label('ناو')
+                               Forms\Components\TextInput::make('father_name')
+                                   ->default($record->parents->father_name)
+                                   ->label('ناوی باوک')
                                    ->disabled()
                                    ->required()
                                    ->maxLength(255),
-                               Forms\Components\TextInput::make('phone')
-                                   ->label('ژمارەی مۆبایل')
+                               Forms\Components\TextInput::make('mother_name')
+                                   ->default($record->parents->mother_name)
+                                   ->label('ناوی دایک')
                                    ->disabled()
-                                   ->default($record->father->phone)
+                                   ->required()
+                                   ->maxLength(255),
+                               Forms\Components\TextInput::make('father_phone')
+                                   ->label('ژمارەی مۆبایلی باوک')
+                                   ->default($record->parents->father_phone)
+                                   ->disabled()
                                    ->tel()
-                                   ->maxLength(255)
-                                   ->default(null),
-                               Forms\Components\TextInput::make('email')
-                                   ->label('پۆستەی ئەلیکترۆنی')
+                                   ->required()
+                                   ->maxLength(255),
+                               Forms\Components\TextInput::make('mother_phone')
+                                                                      ->default($record->parents->mother_phone)
+                                   ->label('ژمارەی مۆبایلی دایک')
+                                   ->tel()
                                    ->disabled()
-                                   ->default($record->father->email)
-                                   ->email()
+                                   ->required()
+                                   ->maxLength(255),
+                               Forms\Components\TextInput::make('father_work')
+                                                                      ->default($record->parents->father_work)
+                                   ->label('پیشەی باوک')
                                    ->maxLength(255)
-                                   ->default(null),
-                               Forms\Components\TextInput::make('work')
-                                   ->default($record->father->work)
                                    ->disabled()
-                                   ->label('پیشە')
+                                   ->default(null),
+                               Forms\Components\TextInput::make('mother_work')
+                                                                      ->default($record->parents->mother_work)
+                                   ->label('پیشەی دایک')
+                                   ->disabled()
                                    ->maxLength(255)
                                    ->default(null),
                            ];
                         })
                         ->color(Color::Blue)
                         ->requiresConfirmation()
-                        ->modalIcon(FatherResource::getNavigationIcon())
+                        ->modalIcon(ParentsResource::getNavigationIcon())
                         ->modalDescription(' ')
                         ->modalFooterActions([
                             DeleteAction::make()
                                 ->hidden()
                         ]),
-                    Tables\Actions\Action::make('mother_detail')
-                        ->label('زانییارییەکانی دایک')
-                        ->icon(MotherResource::getNavigationIcon())
-                        ->requiresConfirmation()
-                        ->modalIcon(MotherResource::getNavigationIcon())
-                        ->modalDescription(' ')
-                        ->color(Color::Green)
-                        ->form(function ($record){
-                            return [
-                                Forms\Components\TextInput::make('name')
-                                    ->default($record->mother->name)
-                                    ->label('ناو')
-                                    ->disabled()
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('phone')
-                                    ->label('ژمارەی مۆبایل')
-                                    ->disabled()
-                                    ->default($record->mother->phone)
-                                    ->tel()
-                                    ->maxLength(255)
-                                    ->default(null),
-                                Forms\Components\TextInput::make('email')
-                                    ->label('پۆستەی ئەلیکترۆنی')
-                                    ->disabled()
-                                    ->default($record->mother->email)
-                                    ->email()
-                                    ->maxLength(255)
-                                    ->default(null),
-                                Forms\Components\TextInput::make('work')
-                                    ->default($record->mother->work)
-                                    ->disabled()
-                                    ->label('پیشە')
-                                    ->maxLength(255)
-                                    ->default(null),
-                            ];
-                        })
-                        ->modalFooterActions([
-                            DeleteAction::make()
-                                ->hidden()
-                        ])
-
-                ])->button()
+                ])->button()->iconSize(IconSize::Small),
+                Tables\Actions\Action::make('print')
+                    ->label('چاپکردن')
+                    ->icon('fas-print')
+                    ->button()
+                    ->color(Color::Green)
+                    ->action(function ($record){
+                        $records = [$record];
+                        Session::put('studentsSession', $records);
+                        return redirect(self::getUrl('printProfile'));
+                    })
             ])
             ->bulkActions([
+                Tables\Actions\BulkAction::make('print')
+                    ->label('چاپکردنی پرۆفایل')
+                    ->action(function ($records){
+                        Session::put('studentsSession', $records);
+                        return redirect(self::getUrl('printProfile'));
+                    })->openUrlInNewTab(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
@@ -514,6 +487,7 @@ class StudentResource extends Resource
             'index' => Pages\ListStudents::route('/'),
             'create' => Pages\CreateStudent::route('/create'),
             'edit' => Pages\EditStudent::route('/{record}/edit'),
+            'printProfile'=>Pages\PrintStudentData::route('printProfile')
         ];
     }
 

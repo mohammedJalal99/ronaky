@@ -2,6 +2,7 @@
 
 namespace App\Models\Student;
 
+use App\Filament\Resources\Student\ParentsResource;
 use App\Models\Finance\StudentPayment;
 use App\Models\Settings\Currency;
 use App\Models\Settings\Stage;
@@ -24,15 +25,11 @@ class Student extends Model
     {
         return $this->belongsTo(Driver::class);
     }
-    public function father():BelongsTo
+    public function parents():BelongsTo
     {
-        return  $this->belongsTo(Father::class);
+        return  $this->belongsTo(Parents::class);
     }
 
-    public function mother():BelongsTo
-    {
-        return  $this->belongsTo(Mother::class);
-    }
 
     public function stage():BelongsTo
     {
@@ -61,6 +58,18 @@ class Student extends Model
     {
          return ($this->amount) - ($this->studentPayment()->get()->sum('dollar_amount'));
     }
+
+   public static function dueAmount($id,$date):float
+   {
+       return self::find($id)->amount - StudentPayment::where('student_id',$id)->where('created_at','<=',$date)
+               ->get()
+            ->sum('dollar_amount');
+   }
+   public static function installmentNumber($id,$date):int
+   {
+       return  StudentPayment::where('student_id',$id)->where('created_at','<=',$date)
+               ->count();
+   }
 
 
 }

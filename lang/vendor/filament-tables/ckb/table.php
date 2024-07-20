@@ -92,7 +92,7 @@ return [
 
     'empty' => [
 
-        'heading' => 'هیچ تۆمارێکی :model بوونی نییە.',
+        'heading' => 'هیچ تۆمارێکی :model بوونی نی یە.',
 
         'description' => 'تۆمارێکی :model دروس بکە بۆ دەستپێکردن.',
 

@@ -19,12 +19,13 @@ class ExpenseResource extends Resource
     use \App\HasConfigurations;
     use HasCreateAnother;
 
+
     protected static ?string $model = Expense::class;
     protected static ?int $navigationSort = 7;
 
 
     protected static ?string $navigationIcon = 'fluentui-expand-up-right-24';
-    protected static ?string $pluralLabel = "خەرجییەکان";
+    protected static ?string $pluralLabel = "خەرجی یەکان";
     protected static ?string $label = "خەرجی";
     protected static ?string $navigationGroup = 'ژمێریاری';
 

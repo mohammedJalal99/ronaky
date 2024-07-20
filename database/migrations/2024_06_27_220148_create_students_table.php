@@ -15,13 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('code');
             $table->string('name');
-            $table->foreignIdFor(\App\Models\Student\Father::class)->nullable()->constrained()->restrictOnDelete();
-            $table->foreignIdFor(\App\Models\Student\Mother::class)->nullable()->constrained()->restrictOnDelete();
+            $table->foreignIdFor(\App\Models\Student\Parents::class)->nullable()->constrained()->restrictOnDelete();
             $table->foreignIdFor(\App\Models\Student\Driver::class)->nullable()->constrained()->restrictOnDelete();
             $table->foreignIdFor(\App\Models\Settings\Stage::class)->constrained()->restrictOnDelete();
             $table->date('birthdate');
             $table->enum('gender', ['male', 'female']);
-            $table->string('address')->nullable();
+            $table->text('address')->nullable();
             $table->date('start_date');
             $table->date('graduation_date')->nullable();
             $table->boolean('book')->default(0);

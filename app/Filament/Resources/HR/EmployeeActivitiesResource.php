@@ -24,8 +24,8 @@ class EmployeeActivitiesResource extends Resource
 
     protected static ?string $navigationIcon = 'carbon-user-activity';
     protected static ?string $label = "چاڵاکی";
-    protected static ?string $pluralLabel = "چاڵاکییەکان";
-    protected static ?string $navigationGroup = 'سەرچاوە مرۆییەکان';
+    protected static ?string $pluralLabel = "چاڵاکی یەکان";
+    protected static ?string $navigationGroup = 'سەرچاوە مرۆی یەکان';
 
     public static function setFields($get,$set)
     {
@@ -49,7 +49,7 @@ class EmployeeActivitiesResource extends Resource
             ->schema([
                 static::selectField('employee_id',EmployeeResource::class)
                     ->relationship('employee', 'name')
-                    ->label('کارمەند')
+                    ->label('ستاف')
                     ->afterStateUpdated(fn(Forms\Get $get,Forms\Set $set)=>static::setFields($get,$set))
                     ->live()
                     ->required(),
@@ -110,7 +110,7 @@ class EmployeeActivitiesResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('employee.name')
-                    ->label('کارمەند')
+                    ->label('ستاف')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('amount')

@@ -167,7 +167,7 @@ return [
 
     ],
 
-    'reorder_indicator' => 'برای تغییر ترتیب، بکشید و رها کنید.',
+    'reorder_indicator' => 'برای تغی یر ترتیب، بکشید و رها کنید.',
 
     'selection_indicator' => [
 

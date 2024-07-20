@@ -16,11 +16,13 @@ use Filament\Actions\ReplicateAction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Session;
 
 class StudentPaymentResource extends Resource
 {
@@ -134,6 +136,13 @@ class StudentPaymentResource extends Resource
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
+                Tables\Actions\Action::make('print')
+                    ->label('چاپکردن')
+                    ->icon('fas-print')
+                    ->color(Color::Green)
+                    ->action(function ($record){
+                        return redirect(self::getUrl('print',['record'=>$record->id]));
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -149,6 +158,7 @@ class StudentPaymentResource extends Resource
     {
         return [
             'index' => Pages\ManageStudentPayments::route('/'),
+            'print'=>Pages\PrintReciept::route('/{record}/print')
         ];
     }
 

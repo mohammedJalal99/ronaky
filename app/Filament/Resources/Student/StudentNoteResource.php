@@ -28,7 +28,7 @@ class StudentNoteResource extends Resource
     protected static ?string $navigationIcon = 'fas-graduation-cap';
     protected static ?string $pluralLabel = "تێبینیەکان";
     protected static ?string $label = "تێبینی";
-    protected static ?string $navigationGroup = 'پەپولەکان';
+    protected static ?string $navigationGroup = 'پەپوولەکان';
 
     public static function form(Form $form): Form
     {
@@ -36,7 +36,7 @@ class StudentNoteResource extends Resource
             ->schema([
                 static::selectField('student_id',StudentResource::class)
                     ->relationship('student', 'name')
-                    ->label('پەپولە')
+                    ->label('پەپوولە')
                     ->required(),
                 Forms\Components\TextInput::make('note')
                     ->label('تێبینی')
@@ -50,7 +50,7 @@ class StudentNoteResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('student.name')
-                    ->label('پەپولە')
+                    ->label('پەپوولە')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('note')

@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mothers', function (Blueprint $table) {
+        Schema::create('parents', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            $table->string('work')->nullable();
+            $table->string('father_name');
+            $table->string('mother_name');
+            $table->string('father_phone');
+            $table->string('mother_phone');
+            $table->string('father_work')->nullable();
+            $table->string('mother_work')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mothers');
+        Schema::dropIfExists('parents');
     }
 };
