@@ -83,6 +83,7 @@ class RoleResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id','desc')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->badge()

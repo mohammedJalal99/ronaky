@@ -26,7 +26,7 @@ class StudentNoteResource extends Resource
 
 
     protected static ?string $navigationIcon = 'fas-graduation-cap';
-    protected static ?string $pluralLabel = "تێبینیەکان";
+    protected static ?string $pluralLabel = "تێبینی یەکان";
     protected static ?string $label = "تێبینی";
     protected static ?string $navigationGroup = 'پەپوولەکان';
 
@@ -48,6 +48,7 @@ class StudentNoteResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id','desc')
             ->columns([
                 Tables\Columns\TextColumn::make('student.name')
                     ->label('پەپوولە')

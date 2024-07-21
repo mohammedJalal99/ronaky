@@ -93,6 +93,7 @@ class StudentPaymentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id','desc')
             ->columns([
                 Tables\Columns\TextColumn::make('student.name')
                     ->label('ناو')
